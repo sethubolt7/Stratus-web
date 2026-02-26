@@ -1,0 +1,120 @@
+<div class="home-container">
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <h1>Stratus</h1>
+      </div>
+      <div class="user-menu">
+        <span class="welcome-text">Welcome, {{ currentUser?.username }}</span>
+        <button class="logout-btn" (click)="onLogout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="layout-grid">
+      <!-- Left Half: Files -->
+      <div class="left-section">
+        <!-- Stats Header -->
+        <div class="stats-header">
+          <div class="stat-box">
+            <span class="stat-value">{{ files.length }}/20</span>
+            <span class="stat-label">File Limit</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-value">{{ formatFileSize(totalSize) }}/50MB</span>
+            <span class="stat-label">Storage Limit</span>
+          </div>
+        </div>
+        
+        <!-- Files List -->
+        <div class="files-section">
+          <div class="files-header">
+            <h3>My Files</h3>
+            <div class="search-container">
+              <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="filterFiles()" placeholder="Search files..." class="search-input">
+            </div>
+          </div>
+          <div class="files-list" *ngIf="filteredFiles.length > 0; else noFiles">
+            <div class="file-card" *ngFor="let file of filteredFiles">
+              <div class="file-info">
+                <h4>{{ file.originalFileName }}</h4>
+                <p>{{ formatFileSize(file.fileSize) }} • {{ file.uploadedAt | date:'short' }}</p>
+              </div>
+              <div class="file-actions">
+                <button class="download-btn" (click)="downloadFile(file.id)">Download</button>
+                <button class="share-btn" (click)="openShareModal(file.id)">Share</button>
+                <button class="delete-btn" (click)="deleteFile(file.id)">Delete</button>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noFiles>
+            <div class="empty-files">
+              <p>No files yet</p>
+              <small>Upload your first file to get started</small>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Right Half: Split -->
+      <div class="right-section">
+        <!-- Top: Notifications -->
+        <div class="notifications-section">
+          <h3>Notifications</h3>
+          <div class="notifications-list" *ngIf="shareRequests.length > 0; else noNotifications">
+            <div class="notification-card" *ngFor="let request of shareRequests">
+              <div class="notification-content">
+                <div class="notification-title">{{ request.file.originalFileName }}</div>
+                <div class="notification-subtitle">Share request from {{ request.sender.username }}</div>
+                <div class="notification-time">{{ request.requestedAt | date:'MMM d, h:mm a' }}</div>
+              </div>
+              <div class="notification-actions">
+                <button class="accept-btn" (click)="respondToShareRequest(request.id, true)">Accept</button>
+                <button class="reject-btn" (click)="respondToShareRequest(request.id, false)">Reject</button>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noNotifications>
+            <div class="empty-notifications">
+              <p>All caught up!</p>
+              <small>No new notifications</small>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Bottom: Upload -->
+        <div class="upload-section">
+          <h3>Upload Files</h3>
+          <div class="upload-area" (click)="fileInput.click()">
+            <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;">
+            <div class="upload-content">
+              <p>{{ isUploading ? 'Uploading...' : 'Click or drag to upload files' }}</p>
+              <small>Max 10MB per file</small>
+              <button class="upload-btn" [disabled]="isUploading">
+                {{ isUploading ? 'Processing...' : 'Choose Files' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Share Modal -->
+  <div class="modal-overlay" *ngIf="showShareModal" (click)="closeShareModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h3>Share File</h3>
+      <input type="text" [(ngModel)]="shareEmail" placeholder="Enter username" class="share-input">
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closeShareModal()">Cancel</button>
+        <button class="send-btn" (click)="shareFile()" [disabled]="!shareEmail">Send Request</button>
+      </div>
+    </div>
+  </div>
+</div>

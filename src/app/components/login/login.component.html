@@ -1,0 +1,100 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Stratus</h1>
+      <p>File Sharing & Storage</p>
+    </div>
+    
+    <!-- Login Form -->
+    <form *ngIf="!isSignUpMode" (ngSubmit)="onLogin()" class="login-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          [(ngModel)]="credentials.username"
+          name="username"
+          required
+          placeholder="Enter your username"
+          [disabled]="isLoading">
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          [(ngModel)]="credentials.password"
+          name="password"
+          required
+          placeholder="Enter your password"
+          [disabled]="isLoading">
+      </div>
+      
+      <div class="success-message" *ngIf="successMessage">
+        {{ successMessage }}
+      </div>
+      
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      
+      <button 
+        type="submit" 
+        class="login-btn"
+        [disabled]="isLoading">
+        <span *ngIf="isLoading">Signing in...</span>
+        <span *ngIf="!isLoading">Sign In</span>
+      </button>
+      
+      <div class="toggle-text">
+        Don't have an account? 
+        <a href="#" (click)="toggleMode(); $event.preventDefault()">Sign Up</a>
+      </div>
+    </form>
+
+    <!-- Sign Up Form -->
+    <form *ngIf="isSignUpMode" (ngSubmit)="onSignUp()" class="login-form">
+      <div class="form-group">
+        <label for="signupUsername">Username</label>
+        <input 
+          type="text" 
+          id="signupUsername" 
+          [(ngModel)]="signUpData.username"
+          name="signupUsername"
+          required
+          placeholder="Choose a username"
+          [disabled]="isLoading">
+      </div>
+      
+      <div class="form-group">
+        <label for="signupPassword">Password</label>
+        <input 
+          type="password" 
+          id="signupPassword" 
+          [(ngModel)]="signUpData.password"
+          name="signupPassword"
+          required
+          placeholder="Choose a password"
+          [disabled]="isLoading">
+      </div>
+      
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+      
+      <button 
+        type="submit" 
+        class="login-btn"
+        [disabled]="isLoading">
+        <span *ngIf="isLoading">Creating account...</span>
+        <span *ngIf="!isLoading">Sign Up</span>
+      </button>
+      
+      <div class="toggle-text">
+        Already have an account? 
+        <a href="#" (click)="toggleMode(); $event.preventDefault()">Sign In</a>
+      </div>
+    </form>
+  </div>
+</div>
