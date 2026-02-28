@@ -26,7 +26,7 @@
             <span class="stat-label">Storage Limit</span>
           </div>
         </div>
-        
+
         <!-- Files List -->
         <div class="files-section">
           <div class="files-header">
@@ -41,7 +41,7 @@
           <div class="files-list" *ngIf="filteredFiles.length > 0; else noFiles">
             <div class="file-card" *ngFor="let file of filteredFiles">
               <div class="file-info">
-                <h4>{{ file.originalFileName }}</h4>
+                <div>{{ file.originalFileName }}</div>
                 <p>{{ formatFileSize(file.fileSize) }} • {{ file.uploadedAt | date:'short' }}</p>
               </div>
               <div class="file-actions">
@@ -51,7 +51,7 @@
               </div>
             </div>
           </div>
-          
+
           <ng-template #noFiles>
             <div class="empty-files">
               <p>No files yet</p>
@@ -79,7 +79,7 @@
               </div>
             </div>
           </div>
-          
+
           <ng-template #noNotifications>
             <div class="empty-notifications">
               <p>All caught up!</p>
