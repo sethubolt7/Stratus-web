@@ -45,9 +45,15 @@
                 <p>{{ formatFileSize(file.fileSize) }} • {{ file.uploadedAt | date:'short' }}</p>
               </div>
               <div class="file-actions">
-                <button class="download-btn" (click)="downloadFile(file.id)">Download</button>
+                <button class="download-btn" (click)="downloadFile(file.id)" [disabled]="downloadingFileId === file.id">
+                  <span *ngIf="downloadingFileId !== file.id">Download</span>
+                  <span *ngIf="downloadingFileId === file.id" class="spinner"></span>
+                </button>
                 <button class="share-btn" (click)="openShareModal(file.id)">Share</button>
-                <button class="delete-btn" (click)="deleteFile(file.id)">Delete</button>
+                <button class="delete-btn" (click)="deleteFile(file.id)" [disabled]="deletingFileId === file.id">
+                  <span *ngIf="deletingFileId !== file.id">Delete</span>
+                  <span *ngIf="deletingFileId === file.id" class="spinner"></span>
+                </button>
               </div>
             </div>
           </div>

@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { FileService, FileModel, ShareRequest } from '../../services/file.service';
 import { User } from '../../models/auth.model';
+import { AuthService } from '../../services/auth.service';
+import { FileModel, FileService, ShareRequest } from '../../services/file.service';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +24,8 @@ export class HomeComponent implements OnInit {
   selectedFileId: number = 0;
   shareEmail: string = '';
   searchTerm: string = '';
+  downloadingFileId: number | null = null; //sethu
+  deletingFileId: number | null = null; // sethu
 
   constructor(
     private authService: AuthService,
@@ -55,7 +57,7 @@ export class HomeComponent implements OnInit {
     if (!this.searchTerm.trim()) {
       this.filteredFiles = this.files;
     } else {
-      this.filteredFiles = this.files.filter(file => 
+      this.filteredFiles = this.files.filter(file =>
         file.originalFileName.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
@@ -91,7 +93,13 @@ export class HomeComponent implements OnInit {
         next: () => {
           this.loadFiles();
         },
-        error: () => alert('Delete failed')
+        complete: () => {
+          this.deletingFileId = null; // sethu
+        },
+        error: () => {
+          this.deletingFileId = null; // sethu
+          alert('Delete failed');
+        }
       });
     }
   }
@@ -151,9 +159,10 @@ export class HomeComponent implements OnInit {
 
 
   downloadFile(fileId: number): void {
+    this.downloadingFileId = fileId; // sethu
     const userId = this.authService.getCurrentUserId();
     const file = this.files.find(f => f.id === fileId);
-    
+
     this.fileService.getSignedUrl(fileId, userId).subscribe({
       next: (response) => {
         fetch(response.url)
@@ -170,7 +179,13 @@ export class HomeComponent implements OnInit {
           })
           .catch(() => {});
       },
-      error: () => {}
+      complete: () => {
+        this.downloadingFileId = null; // sethu
+      },
+      error: () => {
+        this.downloadingFileId = null; // sethu
+        alert('Download failed');
+      }
     });
   }
 

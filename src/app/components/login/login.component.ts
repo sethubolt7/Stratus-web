@@ -1,9 +1,19 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { LoginRequest, SignUpRequest } from '../../models/auth.model';
+import { AuthService } from '../../services/auth.service';
+
+const allowedDomains = [
+  'gmail.com',
+  'yahoo.com',
+  'outlook.com',
+  'hotmail.com',
+  'icloud.com',
+  'protonmail.com',
+  'zoho.com'
+];
 
 @Component({
   selector: 'app-login',
@@ -12,6 +22,7 @@ import { LoginRequest, SignUpRequest } from '../../models/auth.model';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
+
 export class LoginComponent {
   isSignUpMode = false;
   credentials: LoginRequest = { username: '', password: '' };
@@ -38,6 +49,10 @@ export class LoginComponent {
       this.errorMessage = 'Please fill in all fields';
       return;
     }
+    if (!this.validateEmail(this.credentials.username)) {
+      this.errorMessage = 'Please enter a valid email ID';
+      return;
+    }
 
     this.isLoading = true;
     this.errorMessage = '';
@@ -61,7 +76,10 @@ export class LoginComponent {
       this.errorMessage = 'Please fill in all fields';
       return;
     }
-
+    if (!this.validateEmail(this.signUpData.username)) {
+      this.errorMessage = 'Please enter a valid email ID';
+      return;
+    }
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
@@ -85,4 +103,14 @@ export class LoginComponent {
       }
     });
   }
+
+  validateEmail(email: string): boolean {
+    const cleanEmail = email.trim().toLowerCase(); // trim & lowercase
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValidFormat = regex.test(cleanEmail);
+    const domain = cleanEmail.split('@')[1];
+    const isAllowedDomain = domain ? allowedDomains.includes(domain) : false;
+    return isValidFormat && isAllowedDomain;
+  }
+
 }
