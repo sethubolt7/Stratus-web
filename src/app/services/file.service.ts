@@ -29,38 +29,35 @@ export interface ShareRequest {
 })
 export class FileService {
   private apiUrl = 'https://stratusapi-latest.onrender.com/api/file';
-
   constructor(private http: HttpClient) {}
 
-  uploadFile(file: File, userId: number): Observable<any> {
+  uploadFile(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('userId', userId.toString());
-
     return this.http.post(`${this.apiUrl}/upload`, formData);
   }
 
-  deleteFile(id: number, userId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}?userId=${userId}`);
+  deleteFile(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  shareFile(senderId: number, fileId: number, email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/share`, { senderId, fileId, email });
+  shareFile(fileId: number, email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/share`, { fileId, email });
   }
 
-  getUserFiles(userId: number): Observable<FileModel[]> {
-    return this.http.get<FileModel[]>(`${this.apiUrl}/user/${userId}`);
+  getUserFiles(): Observable<FileModel[]> {
+    return this.http.get<FileModel[]>(`${this.apiUrl}/user`);
   }
 
-  getPendingShareRequests(userId: number): Observable<ShareRequest[]> {
-    return this.http.get<ShareRequest[]>(`${this.apiUrl}/requests/${userId}`);
+  getPendingShareRequests(): Observable<ShareRequest[]> {
+    return this.http.get<ShareRequest[]>(`${this.apiUrl}/requests`);
   }
 
   respondToShareRequest(requestId: number, accept: boolean): Observable<any> {
     return this.http.post(`${this.apiUrl}/respond`, { requestId, accept });
   }
 
-  getSignedUrl(fileId: number, userId: number): Observable<{url: string}> {
-    return this.http.get<{url: string}>(`${this.apiUrl}/signed-url/${fileId}?userId=${userId}`);
+  getSignedUrl(fileId: number): Observable<{url: string}> {
+    return this.http.get<{url: string}>(`${this.apiUrl}/signed-url/${fileId}`);
   }
 }

@@ -20,7 +20,6 @@ export class AuthService {
       .pipe(
         tap(response => {
           this.setTokens(response);
-          localStorage.setItem('userId', response.userId.toString());
           this.setCurrentUser({ username: credentials.username });
         })
       );
@@ -34,12 +33,7 @@ export class AuthService {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
-    localStorage.removeItem('userId');
     this.currentUserSubject.next(null);
-  }
-
-  getCurrentUserId(): number {
-    return parseInt(localStorage.getItem('userId') || '0');
   }
 
   isAuthenticated(): boolean {

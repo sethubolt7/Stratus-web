@@ -24,8 +24,8 @@ export class HomeComponent implements OnInit {
   selectedFileId: number = 0;
   shareEmail: string = '';
   searchTerm: string = '';
-  downloadingFileId: number | null = null; //sethu
-  deletingFileId: number | null = null; // sethu
+  downloadingFileId: number | null = null;
+  deletingFileId: number | null = null;
 
   constructor(
     private authService: AuthService,
@@ -42,14 +42,13 @@ export class HomeComponent implements OnInit {
   }
 
   loadFiles(): void {
-    const userId = this.authService.getCurrentUserId();
-    this.fileService.getUserFiles(userId).subscribe({
+    this.fileService.getUserFiles().subscribe({
       next: (files) => {
         this.files = files;
         this.filteredFiles = files;
         this.totalSize = files.reduce((sum, file) => sum + file.fileSize, 0);
       },
-      error: () => {}
+      error: () => {"Files not loaded"}
     });
   }
 
@@ -72,8 +71,7 @@ export class HomeComponent implements OnInit {
 
   uploadFile(file: File): void {
     this.isUploading = true;
-    const userId = this.authService.getCurrentUserId();
-    this.fileService.uploadFile(file, userId).subscribe({
+    this.fileService.uploadFile(file).subscribe({
       next: () => {
         alert('File uploaded successfully!');
         this.loadFiles();
@@ -88,8 +86,7 @@ export class HomeComponent implements OnInit {
 
   deleteFile(id: number): void {
     if (confirm('Are you sure you want to delete this file?')) {
-      const userId = this.authService.getCurrentUserId();
-      this.fileService.deleteFile(id, userId).subscribe({
+      this.fileService.deleteFile(id).subscribe({
         next: () => {
           this.loadFiles();
         },
@@ -113,8 +110,7 @@ export class HomeComponent implements OnInit {
   }
 
   loadShareRequests(): void {
-    const userId = this.authService.getCurrentUserId();
-    this.fileService.getPendingShareRequests(userId).subscribe({
+    this.fileService.getPendingShareRequests().subscribe({
       next: (requests) => {
         this.shareRequests = requests;
       },
@@ -134,8 +130,8 @@ export class HomeComponent implements OnInit {
   }
 
   shareFile(): void {
-    const userId = this.authService.getCurrentUserId();
-    this.fileService.shareFile(userId, this.selectedFileId, this.shareEmail).subscribe({
+    this.shareEmail = this.shareEmail.toLowerCase().trim();
+    this.fileService.shareFile(this.selectedFileId, this.shareEmail).subscribe({
       next: () => {
         alert('Share request sent!');
         this.closeShareModal();
@@ -160,10 +156,9 @@ export class HomeComponent implements OnInit {
 
   downloadFile(fileId: number): void {
     this.downloadingFileId = fileId; // sethu
-    const userId = this.authService.getCurrentUserId();
     const file = this.files.find(f => f.id === fileId);
 
-    this.fileService.getSignedUrl(fileId, userId).subscribe({
+    this.fileService.getSignedUrl(fileId).subscribe({
       next: (response) => {
         fetch(response.url)
           .then(res => res.ok ? res.blob() : Promise.reject())
@@ -180,10 +175,10 @@ export class HomeComponent implements OnInit {
           .catch(() => {});
       },
       complete: () => {
-        this.downloadingFileId = null; // sethu
+        this.downloadingFileId = null;
       },
       error: () => {
-        this.downloadingFileId = null; // sethu
+        this.downloadingFileId = null;
         alert('Download failed');
       }
     });

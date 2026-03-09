@@ -49,6 +49,7 @@ export class LoginComponent {
       this.errorMessage = 'Please fill in all fields';
       return;
     }
+    this.credentials.username = this.credentials.username.toLowerCase().trim();
     if (!this.validateEmail(this.credentials.username)) {
       this.errorMessage = 'Please enter a valid email ID';
       return;
@@ -76,6 +77,9 @@ export class LoginComponent {
       this.errorMessage = 'Please fill in all fields';
       return;
     }
+
+    this.signUpData.username = this.signUpData.username.toLowerCase().trim();
+
     if (!this.validateEmail(this.signUpData.username)) {
       this.errorMessage = 'Please enter a valid email ID';
       return;
